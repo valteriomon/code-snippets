@@ -1,0 +1,14 @@
+[data-folderid] + .unread_cnt_wrapper > .unread_cnt { visibility: hidden !important }
+.article_helper_left, .article_helper_right { visibility: hidden }
+#article_dialog_wrapper { width: auto !important }
+.article_title { text-align: center !important }
+.article_title { width: auto !important }
+.article_footer_placeholder_top { width: calc(100% - 150px) !important }
+.article_sub_title { justify-content: center !important }
+.article_full_contents .article_content, .article_full_contents .article_footer { max-width: none !important }
+.article_content > * { max-width: 800px !important; margin: auto !important }
+.article_content p { text-align: left !important; margin-bottom: 1.2rem !important }
+.article_content > p:first-child { text-align: center !important }
+.article_content img { width: -webkit-fill-available !important; display: block !important; margin: 18px auto !important }
+.article_helper_close, .article_below_helper_close { right: 0 !important }
+@media only screen and (min-width:800px) {.article_content iframe { height: 390px; width: 640px }}
