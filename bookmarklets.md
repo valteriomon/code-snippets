@@ -18,7 +18,7 @@ javascript:(()=>{const title=document.querySelector(".Text__title1").innerText,c
 
 # Trakt.tv data
 
-```javascript
+```
 javascript:(()=>{navigator.clipboard.writeText(document.querySelector("#summary-wrapper h1").innerHTML.replace(/(.+)\s<span class="year">(.+)<\/span>/,"$1 ($2)"))})()
 ```
 
@@ -26,4 +26,10 @@ javascript:(()=>{navigator.clipboard.writeText(document.querySelector("#summary-
 
 ```
 javascript:(()=>{d=document,z=d.createElement('scr'+'ipt'),title=encodeURIComponent(document.title),url=encodeURIComponent(window.location.href);z.setAttribute('src',`LAMBDA_URL?title=${title}&url=${url}`);d.body.appendChild(z)})()
+```
+
+# Insert script
+
+```
+javascript:(()=>{d=document,b=d.body,z=d.createElement('scr'+'ipt');z.setAttribute('src','https://cdn.jsdelivr.net/gh/USER_NAME/REPO/SCRIPT.min.js');b.appendChild(z)})()
 ```
