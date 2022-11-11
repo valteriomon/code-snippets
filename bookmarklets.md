@@ -21,3 +21,9 @@ javascript:(()=>{const title=document.querySelector(".Text__title1").innerText,c
 ```javascript
 javascript:(()=>{navigator.clipboard.writeText(document.querySelector("#summary-wrapper h1").innerHTML.replace(/(.+)\s<span class="year">(.+)<\/span>/,"$1 ($2)"))})()
 ```
+
+# Kindle lambda
+
+```
+javascript:(()=>{d=document,z=d.createElement('scr'+'ipt'),title=encodeURIComponent(document.title),url=encodeURIComponent(window.location.href);z.setAttribute('src',`LAMBDA_URL?title=${title}&url=${url}`);d.body.appendChild(z)})()
+```
