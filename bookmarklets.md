@@ -1,7 +1,7 @@
 # Google cache page
 
 ```
-javascript:(()=>{window.location.href='http://www.google.com/search?sourceid=chrome&ie=UTF-8&q=cache:%27+window.location})()
+javascript:(()=>{window.location.href='http://www.google.com/search?sourceid=chrome&ie=UTF-8&q=cache:'+window.location})()
 ```
 
 # Hackernews comments reader
@@ -32,4 +32,9 @@ javascript:(()=>{d=document,z=d.createElement('scr'+'ipt'),title=encodeURICompon
 
 ```
 javascript:(()=>{d=document,b=d.body,z=d.createElement('scr'+'ipt');z.setAttribute('src','https://cdn.jsdelivr.net/gh/USER_NAME/REPO/SCRIPT.min.js');b.appendChild(z)})()
+```
+
+# Archive page
+```
+javascript:(()=>{window.location.href='https://archive.ph/?run=1&url='+window.location})()
 ```
