@@ -1,0 +1,11 @@
+<html lang="en">
+    <head></head>
+    <body>
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const param = urlParams.get('param');
+            const urlParam = encodeURIComponent(urlParams.get('url'));
+            if(param && urlParam) fetch(`https://postman-echo.com/get?param=${param}&urlParam=${urlParam}`);
+        </script>
+    </body>
+</html>
