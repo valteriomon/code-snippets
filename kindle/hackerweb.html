@@ -1,0 +1,19 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <iframe id="iframe" frameborder="0" width="100%" height="100%"></iframe>
+        <script>
+            (function(){
+                var iframe = document.getElementById('iframe');
+                var id = window.location.href.match(/.+\?(.+)/)[1];
+                iframe.setAttribute("src", "https://hackerweb.app/#/item/" + id);
+                iframe.addEventListener("load", function(event) {
+                    const styleElement = document.createElement("style");
+                    styleElement.textContent = ".view{max-width:none!important}.view section.comments{font-size:30px!important}"
+                    event.target.contentDocument.head.appendChild(styleElement);
+                });
+            })();
+        </script>
+    </body>
+</html>
