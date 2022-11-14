@@ -25,7 +25,7 @@ javascript:(()=>{navigator.clipboard.writeText(document.querySelector("#summary-
 # Kindle lambda
 
 ```
-javascript:(()=>{d=document,z=d.createElement('scr'+'ipt'),title=encodeURIComponent(document.title),url=encodeURIComponent(window.location.href);z.setAttribute('src',`LAMBDA_URL?title=${title}&url=${url}`);d.body.appendChild(z)})()
+javascript:(()=>{hn=prompt("Hacker News comments link");if(hn!==null){id=hn?hn.match(/id=(\d+)/)[1]:"",d=document,z=d.createElement("scr"+"ipt"),t=encodeURIComponent(d.title),url=encodeURIComponent(window.location.href);z.setAttribute("src",`https://lambdaqbrdxcvq-send2kindle.functions.fnc.fr-par.scw.cloud?title=${t}&url=${url}&hn=${id}`);d.body.appendChild(z);}})()
 ```
 
 # Insert script
