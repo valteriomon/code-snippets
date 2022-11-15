@@ -1,11 +1,5 @@
-var GITHUB = {
-    "endpoint": "",
-    "token": "",
-    "commiterName": "",
-    "commiterEmail": ""
-};
-var LAMBDA_URL = "";
-var APPSCRIPT_URL = "";
+var SEND_TO_KINDLE_URL = "";
+var CLIPPINGS_SAVER_URL = "";
 
 var CLIPPINGS_PATH;
 var HACKERWEB_PATH;
