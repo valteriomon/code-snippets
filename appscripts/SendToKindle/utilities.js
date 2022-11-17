@@ -11,14 +11,59 @@ function setEnv(vars) {
   return env;
 }
 
-function statusResponse(message, statusCode=200) {
-  const response = {
-    statusCode: statusCode,
-    message: message
+function respond(content, statusCode=200) {
+  function html() {
+    return HtmlService.createHtmlOutput(content);
   }
-  return createOutput(response);
+
+  function json(){
+    if (typeof content === 'string' || content instanceof String) {
+      content = {
+        statusCode: statusCode,
+        message: content
+      }
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify(content)).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  function js() {
+    return ContentService.createTextOutput(content).setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+
+  function text() {
+    return ContentService.createTextOutput(content).setMimeType(ContentService.MimeType.TEXT);
+  }
+
+  return {
+    json: json,
+    text: text,
+    js: js,
+    html: html
+  }
 }
 
-function createOutput(content) {
-  return ContentService.createTextOutput(JSON.stringify(content)).setMimeType(ContentService.MimeType.JSON);
+class Sheet {
+  constructor(id) {
+    this.id = id;
+    this.sheet = this._getSheet();
+  }
+
+  _getSheet() {
+    const spreadsheet = SpreadsheetApp.openById(this.id);
+    return spreadsheet.getSheets()[0];
+  }
+
+  getData() {
+    const range = this.sheet.getDataRange();
+    return range.getValues();
+  }
+
+  addRow(row){
+    this.sheet.appendRow(Object.values(row));
+  }
+
+  clean() {
+    this.sheet.clear();
+  }
 }
