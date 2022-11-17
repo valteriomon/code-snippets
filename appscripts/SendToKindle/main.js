@@ -1,7 +1,9 @@
 const ENV = setEnv([
   "SPREADSHEET_ID",
-  "LAMBDA_ENDPOINT",
-  "HACKERBOOK"
+  "HACKERBOOK",
+  "P2K_URL",
+  "FROM_EMAIL",
+  "TO_EMAIL"
 ]);
 
 function doGet(event) {
@@ -9,59 +11,61 @@ function doGet(event) {
 
   if (event.parameter.clean !== undefined) {
     sheet.clean();
-    return buildResponse("Clean sheet!");
+    return respond("Clean sheet!").text();
   }
 
   if(event.parameter.title !== undefined && event.parameter.url !== undefined) {
-    sendToKindle(event.parameter.title, event.parameter.url);
+    let response;
 
-    if(event.parameter.hn !== undefined && /^\d+$/.test(event.parameter.hn)) {
-
-      const row = {
-        id: event.parameter.hn,
-        title: event.parameter.title,
-        hackernews: "https://news.ycombinator.com/item?id=" + event.parameter.hn,
-        hackerweb: "https://hackerweb.app/#/item/" + event.parameter.hn,
-        hackerbook: ENV.HACKERBOOK + "?id=" + event.parameter.hn
+    if(sendToKindle(event.parameter.title, event.parameter.url)) {
+      if(event.parameter.newwindow !== undefined) {
+        response = respond('<html><head></head><body><h1>Sent to kindle!</h1><body></html>').html();
+      } else {
+        response = respond('(function(){console.log("Sent to kindle!")})()').js();
       }
 
-      sheet.addRow(row);
-      return createOutput("Saved!");
+      if(event.parameter.hn !== undefined && /^\d+$/.test(event.parameter.hn)) {
+        const row = {
+          id: event.parameter.hn,
+          title: event.parameter.title,
+          hackernews: "https://news.ycombinator.com/item?id=" + event.parameter.hn,
+          hackerweb: "https://hackerweb.app/#/item/" + event.parameter.hn,
+          hackerbook: ENV.HACKERBOOK + "?id=" + event.parameter.hn
+        }
+        sheet.addRow(row);
+      }
+    } else {
+      response = respond("Push to kindle failed.", 500).json();
     }
+    return response;
   }
 
-  if(event.queryString == "" ) {
-    return createOutput(sheet.getData());
+  return respond(sheet.getData()).json();
+}
+
+function doPost(event) {
+  const body = event.postData.contents;
+  try {
+    const data = JSON.parse(body);
+    if(data.items) {
+        const article = data.items[0];
+        sendToKindle(article.title, article.canonical[0].href);
+    }
+  } catch(e) {
+    Logger.log(e);
   }
 }
 
 function sendToKindle(title, url) {
-  title = encodeURIComponent(title);
   url = encodeURIComponent(url);
-  UrlFetchApp.fetch(`${ENV.LAMBDA_ENDPOINT}?url=${url}&title=${title}`);
-}
-
-class Sheet {
-  constructor(id) {
-    this.id = id;
-    this.sheet = this._getSheet();
-  }
-
-  _getSheet() {
-    const spreadsheet = SpreadsheetApp.openById(this.id);
-    return spreadsheet.getSheets()[0];
-  }
-
-  getData() {
-    const range = this.sheet.getDataRange();
-    return range.getValues();
-  }
-
-  addRow(row){
-    this.sheet.appendRow(Object.values(row));
-  }
-
-  clean() {
-    this.sheet.clear();
-  }
+  const options = {
+    'method': 'POST',
+    'payload': {
+      'email': ENV.TO_EMAIL,
+      'from': ENV.FROM_EMAIL,
+      'title': title
+    }
+  };
+  const response = UrlFetchApp.fetch(`${ENV.P2K_URL}/send.php?context=send&url=${url}`, options);
+  return /Sent\!/.test(response);
 }
