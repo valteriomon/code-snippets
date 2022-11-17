@@ -11,8 +11,13 @@
 (function() {
     'use strict';
     window.addEventListener('keyup', (event) => {
-        if(event.ctrlKey && event.altKey && !event.shiftKey && event.key == "a") {
-            window.location.href="https://archive.ph/?run=1&url="+window.location;
+        console.log(event)
+        if(event.altKey && event.shiftKey) {
+            if(event.key == "A") {
+                window.location.href="https://archive.ph/?run=1&url="+window.location;
+            } else if(event.key == "X") {
+                window.location.href='https://hackerweb.app/#/item/'+(new URL(window.location)).searchParams.get('id');
+            }
         }
     });
 })();
