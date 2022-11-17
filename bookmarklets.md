@@ -25,7 +25,49 @@ javascript:(()=>{navigator.clipboard.writeText(document.querySelector("#summary-
 # Send to Kindle
 
 ```
-javascript:(()=>{d=document,t=encodeURIComponent(d.title),href=window.location.href,hn=(window.location.href.indexOf("https://news.ycombinator.com/")==0),url=encodeURIComponent(hn?d.querySelector(".titleline > a").getAttribute("href"):href),id=hn?href.match(/id=(\d+)/)[1]:"",d.head.insertAdjacentHTML("beforeend",`<style>#send2kindle{visibility:hidden;min-width:250px;margin:auto;max-width: 600px;background-color:#333;color:red;border:4px solid red;text-align:center;border-radius:2px;padding:16px;position:fixed;z-index:1;left:0;right:0;bottom:30px;visibility:visible;-webkit-animation:.5s fadein;animation:.5s fadein}#send2kindle a{font-size:30px;color:red},@-webkit-keyframes fadein{from{bottom:0;opacity:0}to{bottom:30px;opacity:1}}@keyframes fadein{from{bottom:0;opacity:0}to{bottom:30px;opacity:1}}</style>%60),z=d.createElement('div'),z.setAttribute('id','send2kindle'),z.innerHTML=%60<a target="_blank" href="APPSCRIPT/exec?title=${t}&url=${url}&hn=${id}">Send to kindle!</a>%60;d.body.appendChild(z);})()
+javascript:(()=>{
+	lambda="";
+	appscript="";
+	e=encodeURIComponent;
+    d=document;
+    d.head.insertAdjacentHTML("beforeend","<style>#s2k {visibility: hidden;min-width: 250px;transform: translateX(-50%);background-color: #333;color: #fff;text-align: center;border-radius: 2px;padding: 16px;position: fixed;z-index: 1;left: 50%;bottom: 30px;}#s2k.show {visibility: visible;-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;animation: fadein 0.5s, fadeout 0.5s 2.5s;}@-webkit-keyframes fadein {from {bottom: 0; opacity: 0;}to {bottom: 30px; opacity: 1;}}@keyframes fadein {from {bottom: 0; opacity: 0;}to {bottom: 30px; opacity: 1;}}@-webkit-keyframes fadeout {from {bottom: 30px; opacity: 1;}to {bottom: 0; opacity: 0;}}@keyframes fadeout {from {bottom: 30px; opacity: 1;}to {bottom: 0; opacity: 0;}}</style>")
+	snackbar=d.createElement('div');
+	snackbar.setAttribute('id','s2k');
+    d.body.appendChild(snackbar);
+	title=e(d.title);
+	loc=window.location.href;
+	hn=(loc.indexOf("https://news.ycombinator.com/")==0);
+	if(hn){
+		url=e(d.querySelector(".titleline > a").getAttribute("href"));
+		id=loc.match(/id=(\d+)/)[1];
+		endpoint=`${appscript}?title=${title}&url=${url}&hn=${id}`;
+		window.open(endpoint,'_blank');
+		snackbar.innerText="Sending article and comments in new tab...";
+		snackbar.className = "show";
+		setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3000);
+	} else {
+		url=e(loc);
+		endpoint=`${lambda}?title=${title}&url=${url}`;
+		scr=d.createElement('scr'+'ipt');
+		scr.onload = ()=>{            
+			if(!d.querySelector('#senttokindle')){
+				window.open(endpoint,'_blank');
+				snackbar.innerText="Sending article in new tab...";
+				snackbar.className = "show";
+				setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3000);
+			} else {
+                snackbar.innerText="Sent to kindle!";
+				snackbar.className = "show";				
+				setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3000);
+			}
+		}
+		scr.setAttribute('src',endpoint);
+        d.body.appendChild(scr);
+	}
+})()
+```
+```
+javascript:lambda="",appscript="",e=encodeURIComponent,(d=document).head.insertAdjacentHTML("beforeend","<style>#s2k {visibility: hidden;min-width: 250px;transform: translateX(-50%);background-color: #333;color: #fff;text-align: center;border-radius: 2px;padding: 16px;position: fixed;z-index: 1;left: 50%;bottom: 30px;}#s2k.show {visibility: visible;-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;animation: fadein 0.5s, fadeout 0.5s 2.5s;}@-webkit-keyframes fadein {from {bottom: 0; opacity: 0;}to {bottom: 30px; opacity: 1;}}@keyframes fadein {from {bottom: 0; opacity: 0;}to {bottom: 30px; opacity: 1;}}@-webkit-keyframes fadeout {from {bottom: 30px; opacity: 1;}to {bottom: 0; opacity: 0;}}@keyframes fadeout {from {bottom: 30px; opacity: 1;}to {bottom: 0; opacity: 0;}}</style>"),(snackbar=d.createElement("div")).setAttribute("id","s2k"),d.body.appendChild(snackbar),title=e(d.title),(hn=0==(loc=window.location.href).indexOf("https://news.ycombinator.com/"))?(endpoint=`${appscript}?title=${title}&url=${url=e(d.querySelector(".titleline > a").getAttribute("href"))}&hn=${id=loc.match(/id=(\d+)/)[1]}`,window.open(endpoint,"_blank"),snackbar.innerText="Sending article and comments in new tab...",snackbar.className="show",setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3e3)):(endpoint=`${lambda}?title=${title}&url=${url=e(loc)}`,(scr=d.createElement("script")).onload=()=>{d.querySelector("#senttokindle")?(snackbar.innerText="Sent to kindle!",snackbar.className="show",setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3e3)):(window.open(endpoint,"_blank"),snackbar.innerText="Sending article in new tab...",snackbar.className="show",setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3e3))},scr.setAttribute("src",endpoint),d.body.appendChild(scr));
 ```
 
 # Insert script
