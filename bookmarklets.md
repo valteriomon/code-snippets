@@ -26,48 +26,40 @@ javascript:(()=>{navigator.clipboard.writeText(document.querySelector("#summary-
 
 ```
 javascript:(()=>{
-	lambda="";
-	appscript="";
-	e=encodeURIComponent;
+    appscript="";
+    e=encodeURIComponent;
     d=document;
     d.head.insertAdjacentHTML("beforeend","<style>#s2k {visibility: hidden;min-width: 250px;transform: translateX(-50%);background-color: #333;color: #fff;text-align: center;border-radius: 2px;padding: 16px;position: fixed;z-index: 1;left: 50%;bottom: 30px;}#s2k.show {visibility: visible;-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;animation: fadein 0.5s, fadeout 0.5s 2.5s;}@-webkit-keyframes fadein {from {bottom: 0; opacity: 0;}to {bottom: 30px; opacity: 1;}}@keyframes fadein {from {bottom: 0; opacity: 0;}to {bottom: 30px; opacity: 1;}}@-webkit-keyframes fadeout {from {bottom: 30px; opacity: 1;}to {bottom: 0; opacity: 0;}}@keyframes fadeout {from {bottom: 30px; opacity: 1;}to {bottom: 0; opacity: 0;}}</style>")
-	snackbar=d.createElement('div');
-	snackbar.setAttribute('id','s2k');
+    snackbar=d.createElement('div');
+    snackbar.setAttribute('id','s2k');
     d.body.appendChild(snackbar);
-	title=e(d.title);
-	loc=window.location.href;
-	hn=(loc.indexOf("https://news.ycombinator.com/")==0);
-	if(hn){
-		url=e(d.querySelector(".titleline > a").getAttribute("href"));
-		id=loc.match(/id=(\d+)/)[1];
-		endpoint=`${appscript}?title=${title}&url=${url}&hn=${id}`;
-		window.open(endpoint,'_blank');
-		snackbar.innerText="Sending article and comments in new tab...";
-		snackbar.className = "show";
-		setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3000);
-	} else {
-		url=e(loc);
-		endpoint=`${lambda}?title=${title}&url=${url}`;
-		scr=d.createElement('scr'+'ipt');
-		scr.onload = ()=>{            
-			if(!d.querySelector('#senttokindle')){
-				window.open(endpoint,'_blank');
-				snackbar.innerText="Sending article in new tab...";
-				snackbar.className = "show";
-				setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3000);
-			} else {
-                snackbar.innerText="Sent to kindle!";
-				snackbar.className = "show";				
-				setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3000);
-			}
-		}
-		scr.setAttribute('src',endpoint);
+    title=e(d.title);
+    loc=window.location.href;
+    hn=(loc.indexOf("https://news.ycombinator.com/")==0);
+    if(hn){
+        url=e(d.querySelector(".titleline > a").getAttribute("href"));
+        id=loc.match(/id=(\d+)/)[1];
+        endpoint=`${appscript}?newwindow&title=${title}&url=${url}&hn=${id}`;
+        window.open(endpoint,'_blank');
+    } else {
+        url=e(loc);
+        endpoint=`${appscript}?title=${title}&url=${url}`;
+        scr=d.createElement('scr'+'ipt');
+        scr.onerror = () => {
+            window.open(endpoint+"&newwindow",'_blank');
+        }
+        scr.onload = () => {
+            snackbar.innerText="Sent to kindle!";
+            snackbar.className = "show";                
+            setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3000);
+        }
+        scr.setAttribute('src',endpoint);
         d.body.appendChild(scr);
-	}
+    }
 })()
 ```
 ```
-javascript:lambda="",appscript="",e=encodeURIComponent,(d=document).head.insertAdjacentHTML("beforeend","<style>#s2k {visibility: hidden;min-width: 250px;transform: translateX(-50%);background-color: #333;color: #fff;text-align: center;border-radius: 2px;padding: 16px;position: fixed;z-index: 1;left: 50%;bottom: 30px;}#s2k.show {visibility: visible;-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;animation: fadein 0.5s, fadeout 0.5s 2.5s;}@-webkit-keyframes fadein {from {bottom: 0; opacity: 0;}to {bottom: 30px; opacity: 1;}}@keyframes fadein {from {bottom: 0; opacity: 0;}to {bottom: 30px; opacity: 1;}}@-webkit-keyframes fadeout {from {bottom: 30px; opacity: 1;}to {bottom: 0; opacity: 0;}}@keyframes fadeout {from {bottom: 30px; opacity: 1;}to {bottom: 0; opacity: 0;}}</style>"),(snackbar=d.createElement("div")).setAttribute("id","s2k"),d.body.appendChild(snackbar),title=e(d.title),(hn=0==(loc=window.location.href).indexOf("https://news.ycombinator.com/"))?(endpoint=`${appscript}?title=${title}&url=${url=e(d.querySelector(".titleline > a").getAttribute("href"))}&hn=${id=loc.match(/id=(\d+)/)[1]}`,window.open(endpoint,"_blank"),snackbar.innerText="Sending article and comments in new tab...",snackbar.className="show",setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3e3)):(endpoint=`${lambda}?title=${title}&url=${url=e(loc)}`,(scr=d.createElement("script")).onload=()=>{d.querySelector("#senttokindle")?(snackbar.innerText="Sent to kindle!",snackbar.className="show",setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3e3)):(window.open(endpoint,"_blank"),snackbar.innerText="Sending article in new tab...",snackbar.className="show",setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3e3))},scr.setAttribute("src",endpoint),d.body.appendChild(scr));
+javascript:appscript="",e=encodeURIComponent,(d=document).head.insertAdjacentHTML("beforeend","<style>#s2k {visibility: hidden;min-width: 250px;transform: translateX(-50%);background-color: #333;color: #fff;text-align: center;border-radius: 2px;padding: 16px;position: fixed;z-index: 1;left: 50%;bottom: 30px;}#s2k.show {visibility: visible;-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;animation: fadein 0.5s, fadeout 0.5s 2.5s;}@-webkit-keyframes fadein {from {bottom: 0; opacity: 0;}to {bottom: 30px; opacity: 1;}}@keyframes fadein {from {bottom: 0; opacity: 0;}to {bottom: 30px; opacity: 1;}}@-webkit-keyframes fadeout {from {bottom: 30px; opacity: 1;}to {bottom: 0; opacity: 0;}}@keyframes fadeout {from {bottom: 30px; opacity: 1;}to {bottom: 0; opacity: 0;}}</style>"),(snackbar=d.createElement("div")).setAttribute("id","s2k"),d.body.appendChild(snackbar),title=e(d.title),(hn=0==(loc=window.location.href).indexOf("https://news.ycombinator.com/"))?(endpoint=`${appscript}?newwindow&title=${title}&url=${url=e(d.querySelector(".titleline > a").getAttribute("href"))}&hn=${id=loc.match(/id=(\d+)/)[1]}`,window.open(endpoint,"_blank")):(endpoint=`${appscript}?title=${title}&url=${url=e(loc)}`,(scr=d.createElement("script")).onerror=()=>{window.open(endpoint+"&newwindow","_blank")},scr.onload=()=>{snackbar.innerText="Sent to kindle!",snackbar.className="show",setTimeout(()=>{snackbar.className=snackbar.className.replace("show","")},3e3)},scr.setAttribute("src",endpoint),d.body.appendChild(scr));
 ```
 
 # Insert script
