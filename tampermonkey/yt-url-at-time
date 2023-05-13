@@ -1,0 +1,53 @@
+// ==UserScript==
+// @name        yt-url-at-time
+// @namespace   mechalynx/yt-url-at-time
+// @license     MIT
+// @grant       none
+// @description On youtube, use alt+` to set the url to the current timestamp, for easy bookmarking
+// @match       https://www.youtube.com/*
+// @version     0.2.7
+// @copyright   2017, MechaLynx (https://github.com/MechaLynx)
+// @run-at document-idle
+// @author      MechaLynx
+// ==/UserScript==
+// jshint esversion: 6
+
+// Matches time hashes for the purpose of removing them
+// note that I don't like my regexp here...
+var re_timehash = /#t=(?:[0-9]*\.?[0-9]*|(?:[0-9]*(?:h|m|s))*)*/g;
+
+// `video` element utility
+var video = {
+  get element() {
+    return document.querySelector('#movie_player video');
+  },
+  get timehash() {
+    var secs = this.element.currentTime, h, m, s;
+    return '#t=' + [(h = ~~(secs / 3600)) && h + 'h' || null,
+    (m = ~~(secs % 3600 / 60)) && m + 'm' || null,
+    (s = ~~(secs % 3600 % 60)) && s + 's'].join('');
+  },
+  get plaintimehash() {
+    return '#t=' + this.element.currentTime;
+  },
+  get notimehash() {
+    return window.location.origin +
+    window.location.pathname +
+    window.location.search +
+    window.location.hash.replace(re_timehash, '');
+  }
+};
+
+// Add the timestamp to the URL
+var hashmodifier = function(precise=false){
+  if ( location.href.match(/.*watch.*/) && document.querySelector('.videoAdUi') === null){
+    precise ? history.replaceState(false, false, video.notimehash + video.plaintimehash) : history.replaceState(false, false, video.notimehash + video.timehash);
+  }
+};
+
+document.addEventListener('keydown', z => {
+  if (z.altKey && z.code === 'KeyQ'){
+     hashmodifier(false);
+     navigator.clipboard.writeText(window.location.href);
+  }
+});
