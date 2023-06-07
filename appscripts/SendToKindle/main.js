@@ -14,28 +14,53 @@ function doGet(event) {
     return respond("Clean sheet!").text();
   }
 
-  if(event.parameter.title !== undefined && event.parameter.url !== undefined) {
-    let response;
+  if (event.parameter.delete !== undefined) {
+    const ids = sheet.getFirstColumnValues();
 
-    if(sendToKindle(event.parameter.title, event.parameter.url)) {
+    ids.forEach((id, i) => {
+      if(event.parameter.delete == id[0]){
+        sheet.deleteRow(i+1);
+      }
+    });
+  }
+
+  if(event.parameter.url !== undefined) {
+    let response, title, hn, url = event.parameter.url;
+
+    if(/^https:\/\/news.ycombinator.com/.test(url)) {
+      hn = url.match(/id=(\d+)/)[1];
+      const rawData = UrlFetchApp.fetch(`https://hacker-news.firebaseio.com/v0/item/${hn}.json`);
+      const parsedData = JSON.parse(rawData);
+      url = parsedData.url;
+      title = parsedData.title;
+    } else if(event.parameter.title !== undefined) {
+      title = event.parameter.title;
+    }
+
+    const sendToKindleResponse = sendToKindle(title, url);
+    if(sendToKindleResponse === true) {
+      if(event.parameter.hn !== undefined && /^\d+$/.test(event.parameter.hn)) {
+        hn = event.parameter.hn;
+      }
+
+      if(hn) {
+        const row = {
+          id: hn,
+          title: title,
+          hackernews: "https://news.ycombinator.com/item?id=" + hn,
+          hackerweb: "https://hackerweb.app/#/item/" + hn,
+          hackerbook: ENV.HACKERBOOK + "?id=" + hn
+        }
+        sheet.addRow(row);
+      }
+
       if(event.parameter.newwindow !== undefined) {
         response = respond('<html><head></head><body><h1>Sent to kindle!</h1><body></html>').html();
       } else {
         response = respond('(function(){console.log("Sent to kindle!")})()').js();
       }
-
-      if(event.parameter.hn !== undefined && /^\d+$/.test(event.parameter.hn)) {
-        const row = {
-          id: event.parameter.hn,
-          title: event.parameter.title,
-          hackernews: "https://news.ycombinator.com/item?id=" + event.parameter.hn,
-          hackerweb: "https://hackerweb.app/#/item/" + event.parameter.hn,
-          hackerbook: ENV.HACKERBOOK + "?id=" + event.parameter.hn
-        }
-        sheet.addRow(row);
-      }
     } else {
-      response = respond("Push to kindle failed.", 500).json();
+      response = respond(sendToKindleResponse).text();
     }
     return response;
   }
@@ -67,5 +92,8 @@ function sendToKindle(title, url) {
     }
   };
   const response = UrlFetchApp.fetch(`${ENV.P2K_URL}/send.php?context=send&url=${url}`, options);
-  return /Sent\!/.test(response);
+  if(/Sent\!/.test(response)) {
+    return true;
+  }
+  return response;
 }
